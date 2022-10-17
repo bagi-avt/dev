@@ -1,4 +1,8 @@
 import React from 'react';
+import {
+    CSSTransition,
+    TransitionGroup,
+} from 'react-transition-group';
 import PostItem from "./PostItem";
 import {IPost} from "./PostForm";
 
@@ -16,9 +20,18 @@ const PostList:React.FC<IProps> = ({posts, title,removePost}) => {
     return (
         <div>
             <h1 style={{textAlign: 'center'}}>{title}</h1>
-            {posts?.map((post: IPost, index) =>
-                <PostItem removePost={removePost} number={index + 1} post={post} key={post.id}/>
-            )}
+            <TransitionGroup>
+                {posts?.map((post: IPost, index) =>
+                    <CSSTransition
+                        key={post.id}
+                        timeout={500}
+                        classNames="post"
+                    >
+                        <PostItem removePost={removePost} number={index + 1} post={post}/>
+                    </CSSTransition>
+                )}
+            </TransitionGroup>
+
         </div>
     );
 };

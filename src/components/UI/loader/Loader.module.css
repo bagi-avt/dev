@@ -1,0 +1,15 @@
+.loader {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    border: 3px dashed teal;
+    animation: rotete 1s infinite linear;
+}
+@keyframes rotete {
+    from {
+        transform: rotate(0deg) scale(1);
+    }
+    to {
+        transform: rotate(360deg) scale(1.5);
+    }
+}

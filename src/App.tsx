@@ -1,21 +1,23 @@
-import React, { useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './styles/styles.css'
 import PostList from "./components/PostList";
 import PostForm, {IPost} from "./components/PostForm";
-import {getObjectValueByKey} from "./utils";
 import PostFilter from "./components/PostFilter";
 import Modal from "./components/UI/modal/Modal";
 import Button from "./components/UI/button/Button";
+import {usePosts} from "./hooks/usePosts";
+import PostService from "./api/PostService";
+import Loader from "./components/UI/loader/Loader";
+import {useFetching} from "./hooks/useFetching";
 
 function App() {
-    const [posts, setPosts] = useState([
-        {id: 1, title: 'Javascript', body: 'Javascript - язык программирования'},
-        {id: 2, title: 'CCJavascript 2', body: 'Javascript - язык программирования'},
-        {id: 3, title: 'BBJavascript 3', body: 'AAJavascript - язык программирования'},
-        {id: 4, title: 'AAJavascript 3', body: 'Javascript - язык программирования'}
-    ]);
+    const [posts, setPosts] = useState<IPost[]>([]);
     const [filter, setFilter] = useState({sort: '', query:''});
     const [visibleModal, setVisibleModal] = useState(false);
+    const [fetchPosts, isPostsLoading, postsError] = useFetching(async () => {
+        const newPosts:IPost[] = await PostService.getAll();
+        setPosts(newPosts);
+    })
     const createPost = (newPost: IPost): void => {
         setPosts([...posts, newPost])
         setVisibleModal(false)
@@ -24,20 +26,12 @@ function App() {
         setPosts(posts.filter((post: IPost) => post.id !== id))
     }
 
-    const sortedPost: IPost[] = useMemo(()=> {
-        return filter.sort ?
-            [...posts].sort((a: IPost, b: IPost) => {
-                return getObjectValueByKey(filter.sort, a)?.localeCompare(getObjectValueByKey(filter.sort, b));
-            })
-            :
-            posts
-    }, [filter.sort, posts])
+    useEffect(()=>{
+        // @ts-ignore
+        fetchPosts();
+    },[])
 
-    const sortedAndSearchedPosts = useMemo(()=>{
-        return sortedPost.filter(post => post.title.toUpperCase().includes(filter.query.toUpperCase()))
-    },[filter.query, sortedPost])
-
-
+    const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
 
     return (
         <div className="App">
@@ -46,7 +40,15 @@ function App() {
                 <PostForm create={createPost}/>
             </Modal>
             <PostFilter filter={filter} setFilter={setFilter} />
-            <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Список постов'/>
+
+            {postsError && <h1>{String(postsError)}</h1>}
+            {isPostsLoading
+                ? <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <Loader />
+                </div>
+                : <PostList removePost={removePost} posts={sortedAndSearchedPosts} title='Список постов'/>
+            }
+
         </div>
     );
 }
