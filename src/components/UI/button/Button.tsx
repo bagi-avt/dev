@@ -1,12 +1,17 @@
-import React from 'react';
+import React, {ButtonHTMLAttributes, FC} from 'react';
 
 import classes from './Button.module.css';
-const Button = () => {
+
+interface IProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    children?: React.ReactNode
+}
+
+const Button: FC<IProps> = ({children, ...props}) => {
 
 
     return (
-        <button className={classes.button}>
-
+        <button {...props} className={classes.button}>
+            {children}
         </button>
     );
 };
