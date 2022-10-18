@@ -20,3 +20,12 @@ export const usePosts = (posts: IPost[], sort: string, query: string) => {
         return sortedPost.filter(post => post.title.toUpperCase().includes(query.toUpperCase()))
     },[query, sortedPost]);
 }
+export const usePagesArray = (totalPages: number) => {
+    return useMemo(()=>{
+        const result = [];
+        for(let i = 0; i < totalPages; i++) {
+            result.push(i + 1);
+        }
+        return result;
+    }, [totalPages]);
+}

@@ -31,7 +31,7 @@ const PostForm:FC<IProps> = ({create}) => {
         <form action="">
             <Input value={post.title} type="text" name='title' placeholder='Название поста' onChange={onInputChangeTitle}/>
             <Input value={post.body} type="text" name='body' placeholder='Описание поста' onChange={onInputChangeBody}/>
-            <Button onClick={onButtonClick}>Создать пост</Button>
+            <Button disabled={post.title === '' || post.body === ''} onClick={onButtonClick}>Создать пост</Button>
         </form>
     );
 };

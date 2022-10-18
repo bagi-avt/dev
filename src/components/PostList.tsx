@@ -21,13 +21,13 @@ const PostList:React.FC<IProps> = ({posts, title,removePost}) => {
         <div>
             <h1 style={{textAlign: 'center'}}>{title}</h1>
             <TransitionGroup>
-                {posts?.map((post: IPost, index) =>
+                {posts?.map((post: IPost) =>
                     <CSSTransition
                         key={post.id}
                         timeout={500}
                         classNames="post"
                     >
-                        <PostItem removePost={removePost} number={index + 1} post={post}/>
+                        <PostItem removePost={removePost} number={post.id} post={post}/>
                     </CSSTransition>
                 )}
             </TransitionGroup>
