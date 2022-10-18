@@ -1,23 +1,51 @@
-import React from 'react';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import './styles/styles.css'
-
-import Posts from "./pages/Posts";
-import About from "./pages/About";
 import Navbar from "./components/UI/navbar/Navbar";
-import Error from "./pages/Error";
+import {privateRoutes, publicRoutes} from "./router";
+import {AuthContext} from "./context";
 
 function App() {
+    const [isAuth, setIsAuth] = useState(false);
+    useEffect(()=>{
+        if (localStorage.getItem('auth')) setIsAuth(true)
 
+    },[])
     return (
-        <BrowserRouter>
-            <Navbar/>
-            <Routes>
-                <Route path="/about" element={<About/>}/>
-                <Route path="/posts" element={<Posts/>}/>
-                <Route path="/*" element={<Error/>}/>
-            </Routes>
-        </BrowserRouter>
+       <AuthContext.Provider value={{
+           isAuth,
+           setIsAuth
+       }}>
+           <BrowserRouter>
+               <Navbar/>
+               {isAuth
+                   ? <Switch>
+                       {privateRoutes.map(route =>
+                           <Route
+                               component={route.component}
+                               path={route.path}
+                               exact={route.exact}
+                               key={route.path}
+                           />
+                       )}
+
+                       <Redirect to="/posts"/>
+                   </Switch>
+                   :
+                   <Switch>
+                       {publicRoutes.map(route =>
+                           <Route
+                               component={route.component}
+                               path={route.path}
+                               exact={route.exact}
+                               key={route.path}
+                           />
+                       )}
+                       <Redirect to="/login"/>
+                   </Switch>
+               }
+           </BrowserRouter>
+       </AuthContext.Provider>
     );
 }
 
